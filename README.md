@@ -1,4 +1,4 @@
-# IMPORTANT: ONLY TESTED ON LINUX. WINDOWS WILL BE TESTED IN THE FUTURE.
+# IMPORTANT: ONLY TESTED ON UBUNTU. OTHER PLATFORMS WILL BE TESTED IN THE FUTURE.
 
 # ml-log
 
@@ -6,7 +6,8 @@ A machine learning log system that uses Redis and shows plotting results almost 
 
 ## Dependencies
 
-ml-log depends on [cpp_redis](https://github.com/cpp-redis/cpp_redis). For more details on how to install cpp_redis, click [here](https://github.com/cpp-redis/cpp_redis/wiki/Mac-&-Linux-Install).
+- [cpp_redis](https://github.com/cpp-redis/cpp_redis). For more details on how to install cpp_redis, click [here](https://github.com/cpp-redis/cpp_redis/wiki/Mac-&-Linux-Install).
+- [drogon](https://github.com/an-tao/drogon). For more details on how to install drogon, click [here](https://github.com/an-tao/drogon/wiki/ENG-02-Installation).
 
 ## Install Redis using docker
 
