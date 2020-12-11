@@ -1,3 +1,5 @@
+# IMPORTANT: ONLY TESTED ON LINUX. WINDOWS WILL BE TESTED IN THE FUTURE.
+
 # ml-log
 
 A machine learning log system that uses Redis and shows plotting results almost in real time for C++.
