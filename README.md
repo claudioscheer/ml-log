@@ -11,10 +11,10 @@ A machine learning log system that uses Redis and shows plotting results almost 
 
 ## Install Redis using docker
 
-Use the following commands to create a Redis docker container.
+Use the following commands to create a Redis docker container. If you do not use Docker, make sure that your installation supports [RedisJSON](http://redisjson.io).
 
 ```bash
-docker create -ti --name redis-ml-log -p 6379:6379 redis
+docker create -ti --name redis-ml-log -p 6379:6379 redislabs/rejson:latest
 docker start redis-ml-log
 ```
 
