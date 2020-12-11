@@ -9,7 +9,7 @@ namespace ml_log::web_server {
 
 void startWebServer(int port) {
     app().addListener("0.0.0.0", port);
-    app().setDocumentRoot("./web-client");
+    app().setDocumentRoot("./web/build");
 
     auto queryController = std::make_shared<QueryController>();
     app().registerController(queryController);
