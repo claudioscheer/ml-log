@@ -2,7 +2,14 @@
 #include <iostream>
 
 int main() {
-    std::cout << "ml_log main" << std::endl;
+    ml_log::redis::RedisCommands redisCommands("172.17.0.2", 6379);
+
+    ml_log::redis::AppendItemType appendType;
+    for (int i = 0; i <= 10; i++) {
+        appendType.key = "train";
+        /* appendType.json = format("{}"); */
+        redisCommands.appendItem(appendType);
+    }
 
     return 0;
 }
