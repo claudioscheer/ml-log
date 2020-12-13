@@ -1,25 +1,27 @@
+#include "structs.hpp"
 #include <cpp_redis/cpp_redis>
+#include <future>
 #include <iostream>
 #include <string>
 
-namespace ml_log::redis {
+// TODO: Support a pipeline of Redis commands (appendXYItem, for example).
 
-struct AppendItemType {
-    std::string key;
-    std::string json;
-};
+namespace ml_log::redis {
 
 class RedisCommands {
   public:
     // Attributes.
     cpp_redis::client client;
+    int databaseIndex = 0;
 
     // Methods.
-    void appendItem(AppendItemType item);
+    void appendXYItem(std::string key, XYType item);
 
     // Constructors.
-    explicit RedisCommands(std::string redisHost, int redisPort)
-        : _redisHost(redisHost), _redisPort(redisPort) {
+    explicit RedisCommands(std::string redisHost, int redisPort,
+                           std::string applicationName)
+        : _redisHost(redisHost), _redisPort(redisPort),
+          _applicationName(applicationName) {
         this->connect();
     }
 
@@ -27,9 +29,13 @@ class RedisCommands {
     // Attributes.
     std::string _redisHost;
     int _redisPort;
+    std::string _applicationName;
 
     // Methods.
     void connect();
+    std::string processKey(std::string key) {
+        return key + "-" + this->_applicationName;
+    }
 };
 
 void RedisCommands::connect() {
@@ -45,10 +51,27 @@ void RedisCommands::connect() {
                           << "." << std::endl;
             }
         });
+
+    std::future<cpp_redis::reply> reply_future =
+        this->client.select(this->databaseIndex);
+    this->client.sync_commit();
+    std::cout << "Select database: " << reply_future.get() << "." << std::endl;
+
+    // TODO: Make sure that application do not exists in database.
 }
 
-void RedisCommands::appendItem(AppendItemType appendType) {
-    std::cout << appendType.key << std::endl;
+void RedisCommands::appendXYItem(std::string key, XYType item) {
+    std::string processedKey = this->processKey(key);
+    std::future<cpp_redis::reply> reply_future =
+        this->client.exists({processedKey});
+    this->client.sync_commit();
+    if (!reply_future.get().as_integer()) {
+        reply_future = this->client.send({"JSON.SET", processedKey, ".", "[]"});
+    }
+    // TODO: Save the value correctly.
+    reply_future =
+        this->client.send({"JSON.ARRAPPEND", processedKey, ".", "0"});
+    this->client.sync_commit();
 }
 
 } // namespace ml_log::redis
