@@ -1,3 +1,4 @@
+#include "../utils.hpp"
 #include "structs.hpp"
 #include <cpp_redis/cpp_redis>
 #include <future>
@@ -22,6 +23,9 @@ class RedisCommands {
                            std::string applicationName)
         : _redisHost(redisHost), _redisPort(redisPort),
           _applicationName(applicationName) {
+        // TODO: Remove all parameters. Load all from config file. Maybe only
+        // the application name should be a parameter.
+        ml_log::loadConfig();
         this->connect();
     }
 
