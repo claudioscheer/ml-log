@@ -68,10 +68,17 @@ void RedisCommands::appendXYItem(std::string key, XYType item) {
     if (!reply_future.get().as_integer()) {
         reply_future = this->client.send({"JSON.SET", processedKey, ".", "[]"});
     }
-    // TODO: Save the value correctly.
+
+    std::string json = "{\"x\":";
+    json += std::to_string(item.x);
+    json += ",\"y\":";
+    json += std::to_string(item.y);
+    json += "}";
+
     reply_future =
-        this->client.send({"JSON.ARRAPPEND", processedKey, ".", "0"});
+        this->client.send({"JSON.ARRAPPEND", processedKey, ".", json});
     this->client.sync_commit();
+    std::cout << json << reply_future.get() << std::endl;
 }
 
 } // namespace ml_log::redis
