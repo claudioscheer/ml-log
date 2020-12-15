@@ -21,10 +21,9 @@ Config loadConfig() {
     // function is called.
     char *mlLogConfigEnv = std::getenv("ML_LOG_CONFIG");
     if (mlLogConfigEnv == NULL) {
-        // TODO: Add a link to the documentation explaining how to set the
-        // environment variable.
         throw std::runtime_error(
-            "Environment variable ML_LOG_CONFIG is not defined.");
+            "Environment variable ML_LOG_CONFIG is not defined. See more here: "
+            "https://github.com/dl4all/ml-log#configuration-file.");
     }
 
     std::filesystem::path filePath = std::string(mlLogConfigEnv);
