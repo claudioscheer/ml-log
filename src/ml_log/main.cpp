@@ -3,8 +3,7 @@
 #include <string>
 
 int main() {
-    ml_log::redis::RedisCommands redisCommands("172.17.0.2", 6379, "test");
-    redisCommands.databaseIndex = 0;
+    ml_log::redis::RedisCommands redisCommands;
 
     std::string key = "train";
     ml_log::redis::XYType item;
@@ -13,6 +12,9 @@ int main() {
         item.y = i * i;
         redisCommands.appendXYItem(key, item);
     }
+
+    std::string r = redisCommands.getXYArray(key);
+    std::cout << r << std::endl;
 
     return 0;
 }
