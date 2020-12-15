@@ -1,6 +1,7 @@
 #ifndef ML_LOG_UTILS
 #define ML_LOG_UTILS
 
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -18,13 +19,15 @@ struct Config {
 Config loadConfig() {
     // TODO: Cache the file loaded. Avoid parsing the file every time this
     // function is called.
-    //
-    std::filesystem::path filePath = __FILE__;
-    filePath = filePath.remove_filename();
-    for (int i = 0; i < 4; i++) {
-        filePath = filePath.parent_path();
+    char *mlLogConfigEnv = std::getenv("ML_LOG_CONFIG");
+    if (mlLogConfigEnv == NULL) {
+        // TODO: Add a link to the documentation explaining how to set the
+        // environment variable.
+        throw std::runtime_error(
+            "Environment variable ML_LOG_CONFIG is not defined.");
     }
-    filePath /= "ml-log.conf";
+
+    std::filesystem::path filePath = std::string(mlLogConfigEnv);
 
     Config config;
     std::fstream fileStream;

@@ -20,6 +20,8 @@ class RedisCommands {
 
     // Constructors.
     explicit RedisCommands() {
+        // TODO: Avoid connecting to the database each time this constructor is
+        // called.
         this->config = ml_log::loadConfig();
         this->connect();
     }

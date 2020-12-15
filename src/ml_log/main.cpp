@@ -14,7 +14,7 @@ int main() {
     }
 
     std::string r = redisCommands.getXYArray(key);
-    std::cout << r << std::endl;
+    /* std::cout << r << std::endl; */
 
     return 0;
 }
