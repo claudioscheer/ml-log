@@ -17,29 +17,40 @@ class RedisCommands {
     // Methods.
     void appendXYItem(std::string key, XYType item);
     std::string getXYArray(std::string key);
+    std::vector<std::string> getKeys();
 
     // Constructors.
     explicit RedisCommands() {
-        // TODO: Avoid connecting to the database each time this constructor is
-        // called.
-        this->config = ml_log::loadConfig();
+        this->_config = ml_log::loadConfig();
         this->connect();
     }
 
+    static RedisCommands *getInstance() {
+        if (_instance == NULL) {
+            _instance = new RedisCommands();
+        }
+        return _instance;
+    }
+
+    ~RedisCommands() { delete _instance; }
+
   private:
     // Attributes.
-    ml_log::Config config;
+    static RedisCommands *_instance;
+    ml_log::Config _config;
 
     // Methods.
     void connect();
     std::string processKey(std::string key) {
-        return key + "-" + this->config.applicationName;
+        return key + "-" + this->_config.applicationName;
     }
 };
 
+RedisCommands *RedisCommands::_instance = NULL;
+
 void RedisCommands::connect() {
     this->client.connect(
-        this->config.redisHost, this->config.redisPort,
+        this->_config.redisHost, this->_config.redisPort,
         [](const std::string &host, std::size_t port,
            cpp_redis::connect_state status) {
             if (status == cpp_redis::connect_state::dropped) {
@@ -52,7 +63,7 @@ void RedisCommands::connect() {
         });
 
     std::future<cpp_redis::reply> replyFuture =
-        this->client.select(this->config.redisDatabaseIndex);
+        this->client.select(this->_config.redisDatabaseIndex);
     this->client.sync_commit();
     std::cout << "Select database: " << replyFuture.get() << "." << std::endl;
 
@@ -88,6 +99,21 @@ std::string RedisCommands::getXYArray(std::string key) {
     this->client.sync_commit();
 
     return replyFuture.get().as_string();
+}
+
+std::vector<std::string> RedisCommands::getKeys() {
+    std::future<cpp_redis::reply> replyFuture =
+        this->client.keys("*" + this->_config.applicationName);
+    this->client.sync_commit();
+
+    std::vector<cpp_redis::reply> replies = replyFuture.get().as_array();
+    std::vector<std::string> keys;
+    keys.resize(replies.size());
+
+    std::transform(replies.begin(), replies.end(), keys.begin(),
+                   [](cpp_redis::reply r) { return r.as_string(); });
+
+    return keys;
 }
 
 } // namespace ml_log::redis
