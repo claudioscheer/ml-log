@@ -1,23 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
+import {
+    TextField,
+    Drawer,
+    CssBaseline,
+    AppBar,
+    Toolbar,
+    Typography,
+    IconButton,
+    Tooltip,
+} from '@material-ui/core';
 import {
     makeStyles,
     createMuiTheme,
     ThemeProvider,
 } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
 import { blueGrey } from '@material-ui/core/colors';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import AddIcon from '@material-ui/icons/Add';
+import applicationRedisSingleton from './services/ApplicationRedisSingleton';
 import HomeRoute from './routes/Home';
 import './styles/App.css';
 
@@ -47,15 +47,30 @@ const useStyles = makeStyles((theme) => ({
     },
     drawerContainer: {
         overflow: 'auto',
+        padding: theme.spacing(2),
     },
     content: {
         flexGrow: 1,
         padding: theme.spacing(3),
     },
+    title: {
+        flexGrow: 1,
+    },
 }));
 
 function App() {
     const classes = useStyles();
+
+    const [applicationName, setApplicationName] = useState('');
+    const [redisHost, setRedisHost] = useState(
+        localStorage.getItem('mlLogRedisHost') || '',
+    );
+    const [redisPort, setRedisPort] = useState(
+        localStorage.getItem('mlLogRedisPort') || 0,
+    );
+    const [redisDatabaseIndex, setRedisDatabaseIndex] = useState(
+        localStorage.getItem('mlLogRedisDatabaseIndex') || 0,
+    );
 
     return (
         <ThemeProvider theme={theme}>
@@ -63,9 +78,14 @@ function App() {
                 <CssBaseline />
                 <AppBar position="fixed" className={classes.appBar}>
                     <Toolbar>
-                        <Typography variant="h6" noWrap>
+                        <Typography variant="h6" className={classes.title}>
                             ml-log
                         </Typography>
+                        <Tooltip title="Add plot">
+                            <IconButton color="inherit">
+                                <AddIcon />
+                            </IconButton>
+                        </Tooltip>
                     </Toolbar>
                 </AppBar>
                 <Drawer
@@ -77,39 +97,68 @@ function App() {
                 >
                     <Toolbar />
                     <div className={classes.drawerContainer}>
-                        <List>
-                            {['Inbox', 'Starred', 'Send email', 'Drafts'].map(
-                                (text, index) => (
-                                    <ListItem button key={text}>
-                                        <ListItemIcon>
-                                            {index % 2 === 0 ? (
-                                                <InboxIcon />
-                                            ) : (
-                                                <MailIcon />
-                                            )}
-                                        </ListItemIcon>
-                                        <ListItemText primary={text} />
-                                    </ListItem>
-                                ),
-                            )}
-                        </List>
-                        <Divider />
-                        <List>
-                            {['All mail', 'Trash', 'Spam'].map(
-                                (text, index) => (
-                                    <ListItem button key={text}>
-                                        <ListItemIcon>
-                                            {index % 2 === 0 ? (
-                                                <InboxIcon />
-                                            ) : (
-                                                <MailIcon />
-                                            )}
-                                        </ListItemIcon>
-                                        <ListItemText primary={text} />
-                                    </ListItem>
-                                ),
-                            )}
-                        </List>
+                        <TextField
+                            id="outlined-basic"
+                            label="Application Name"
+                            variant="outlined"
+                            value={applicationName}
+                            onChange={(e) => {
+                                setApplicationName(e.target.value);
+                                applicationRedisSingleton.applicationName =
+                                    e.target.value;
+                            }}
+                        />
+                        <br />
+                        <br />
+                        <TextField
+                            id="outlined-basic"
+                            label="Redis Host"
+                            variant="outlined"
+                            value={redisHost}
+                            onChange={(e) => {
+                                setRedisHost(e.target.value);
+                                applicationRedisSingleton.redisHost =
+                                    e.target.value;
+                                localStorage.setItem(
+                                    'mlLogRedisHost',
+                                    e.target.value,
+                                );
+                            }}
+                        />
+                        <br />
+                        <br />
+                        <TextField
+                            id="outlined-basic"
+                            label="Redis Port"
+                            variant="outlined"
+                            value={redisPort}
+                            onChange={(e) => {
+                                setRedisPort(e.target.value);
+                                applicationRedisSingleton.redisPort =
+                                    e.target.value;
+                                localStorage.setItem(
+                                    'mlLogRedisPort',
+                                    e.target.value,
+                                );
+                            }}
+                        />
+                        <br />
+                        <br />
+                        <TextField
+                            id="outlined-basic"
+                            label="Redis Database Index"
+                            variant="outlined"
+                            value={redisDatabaseIndex}
+                            onChange={(e) => {
+                                setRedisDatabaseIndex(e.target.value);
+                                applicationRedisSingleton.redisDatabaseIndex =
+                                    e.target.value;
+                                localStorage.setItem(
+                                    'mlLogRedisDatabaseIndex',
+                                    e.target.value,
+                                );
+                            }}
+                        />
                     </div>
                 </Drawer>
                 <main className={classes.content}>
