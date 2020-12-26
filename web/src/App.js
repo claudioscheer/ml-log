@@ -17,8 +17,10 @@ import {
 import { blueGrey } from '@material-ui/core/colors';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import AddIcon from '@material-ui/icons/Add';
+import AddPlotDialog from './components/AddPlotDialog';
 import applicationRedisSingleton from './services/ApplicationRedisSingleton';
-import HomeRoute from './routes/Home';
+import eventEmitter from './services/EventEmitter';
+import PlotsRoute from './components/Plots';
 import './styles/App.css';
 
 const drawerWidth = 240;
@@ -61,16 +63,19 @@ const useStyles = makeStyles((theme) => ({
 function App() {
     const classes = useStyles();
 
-    const [applicationName, setApplicationName] = useState('');
+    const [applicationName, setApplicationName] = useState(
+        applicationRedisSingleton.applicationName,
+    );
     const [redisHost, setRedisHost] = useState(
-        localStorage.getItem('mlLogRedisHost') || '',
+        applicationRedisSingleton.redisHost,
     );
     const [redisPort, setRedisPort] = useState(
-        localStorage.getItem('mlLogRedisPort') || 0,
+        applicationRedisSingleton.redisPort,
     );
     const [redisDatabaseIndex, setRedisDatabaseIndex] = useState(
-        localStorage.getItem('mlLogRedisDatabaseIndex') || 0,
+        applicationRedisSingleton.redisDatabaseIndex,
     );
+    const [openAddPlot, setOpenAddPlot] = useState(false);
 
     return (
         <ThemeProvider theme={theme}>
@@ -82,7 +87,12 @@ function App() {
                             ml-log
                         </Typography>
                         <Tooltip title="Add plot">
-                            <IconButton color="inherit">
+                            <IconButton
+                                color="inherit"
+                                onClick={(e) => {
+                                    setOpenAddPlot(true);
+                                }}
+                            >
                                 <AddIcon />
                             </IconButton>
                         </Tooltip>
@@ -98,7 +108,6 @@ function App() {
                     <Toolbar />
                     <div className={classes.drawerContainer}>
                         <TextField
-                            id="outlined-basic"
                             label="Application Name"
                             variant="outlined"
                             value={applicationName}
@@ -106,12 +115,15 @@ function App() {
                                 setApplicationName(e.target.value);
                                 applicationRedisSingleton.applicationName =
                                     e.target.value;
+                                localStorage.setItem(
+                                    'mlLogApplicationName',
+                                    e.target.value,
+                                );
                             }}
                         />
                         <br />
                         <br />
                         <TextField
-                            id="outlined-basic"
                             label="Redis Host"
                             variant="outlined"
                             value={redisHost}
@@ -128,7 +140,6 @@ function App() {
                         <br />
                         <br />
                         <TextField
-                            id="outlined-basic"
                             label="Redis Port"
                             variant="outlined"
                             value={redisPort}
@@ -145,7 +156,6 @@ function App() {
                         <br />
                         <br />
                         <TextField
-                            id="outlined-basic"
                             label="Redis Database Index"
                             variant="outlined"
                             value={redisDatabaseIndex}
@@ -165,9 +175,17 @@ function App() {
                     <Toolbar />
                     <Router>
                         <Switch>
-                            <Route path="/" exact component={HomeRoute} />
+                            <Route path="/" exact component={PlotsRoute} />
                         </Switch>
                     </Router>
+
+                    <AddPlotDialog
+                        open={openAddPlot}
+                        handleClose={() => setOpenAddPlot(false)}
+                        handleAdd={(plot) => {
+                            eventEmitter.emit('add-plot', plot);
+                        }}
+                    />
                 </main>
             </div>
         </ThemeProvider>
