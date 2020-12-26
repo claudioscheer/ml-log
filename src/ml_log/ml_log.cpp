@@ -1,4 +1,3 @@
-#include "../utils.hpp"
 #include "structs.hpp"
 #include <cpp_redis/cpp_redis>
 #include <future>
@@ -20,14 +19,18 @@ class RedisCommands {
     std::vector<std::string> getKeys();
 
     // Constructors.
-    explicit RedisCommands() {
-        this->_config = ml_log::loadConfig();
-        this->connect();
+    explicit RedisCommands(std::string applicationName, std::string redisHost,
+                           int redisPort, int redisDatabaseIndex) {
+        this->connect(applicationName, redisHost, redisPort,
+                      redisDatabaseIndex);
     }
 
-    static RedisCommands *getInstance() {
+    static RedisCommands *getInstance(std::string applicationName,
+                                      std::string redisHost, int redisPort,
+                                      int redisDatabaseIndex) {
         if (_instance == NULL) {
-            _instance = new RedisCommands();
+            _instance = new RedisCommands(applicationName, redisHost, redisPort,
+                                          redisDatabaseIndex);
         }
         return _instance;
     }
@@ -37,22 +40,25 @@ class RedisCommands {
   private:
     // Attributes.
     static RedisCommands *_instance;
-    ml_log::Config _config;
+    std::string _applicationName;
 
     // Methods.
-    void connect();
+    void connect(std::string applicationName, std::string redisHost,
+                 int redisPort, int redisDatabaseIndex);
     std::string processKey(std::string key) {
-        return key + "-" + this->_config.applicationName;
+        return key + "-" + this->_applicationName;
     }
 };
 
 RedisCommands *RedisCommands::_instance = NULL;
 
-void RedisCommands::connect() {
+void RedisCommands::connect(std::string applicationName, std::string redisHost,
+                            int redisPort, int redisDatabaseIndex) {
+    this->_applicationName = applicationName;
     this->client.connect(
-        this->_config.redisHost, this->_config.redisPort,
-        [](const std::string &host, std::size_t port,
-           cpp_redis::connect_state status) {
+        redisHost, redisPort,
+        [&](const std::string &host, std::size_t port,
+            cpp_redis::connect_state status) {
             if (status == cpp_redis::connect_state::dropped) {
                 std::cout << "Redis client disconnected from " << host << ":"
                           << port << "." << std::endl;
@@ -63,7 +69,7 @@ void RedisCommands::connect() {
         });
 
     std::future<cpp_redis::reply> replyFuture =
-        this->client.select(this->_config.redisDatabaseIndex);
+        this->client.select(redisDatabaseIndex);
     this->client.sync_commit();
     std::cout << "Select database: " << replyFuture.get() << "." << std::endl;
 
@@ -103,7 +109,7 @@ std::string RedisCommands::getXYArray(std::string key) {
 
 std::vector<std::string> RedisCommands::getKeys() {
     std::future<cpp_redis::reply> replyFuture =
-        this->client.keys("*" + this->_config.applicationName);
+        this->client.keys("*" + this->_applicationName);
     this->client.sync_commit();
 
     std::vector<cpp_redis::reply> replies = replyFuture.get().as_array();

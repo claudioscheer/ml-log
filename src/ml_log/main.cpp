@@ -4,7 +4,8 @@
 
 int main() {
     ml_log::redis::RedisCommands *redisCommands =
-        ml_log::redis::RedisCommands::getInstance();
+        ml_log::redis::RedisCommands::getInstance("test", "172.17.0.2", 6379,
+                                                  0);
 
     std::string key = "train";
     ml_log::redis::XYType item;
