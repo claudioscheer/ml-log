@@ -45,4 +45,4 @@ docker exec -it redis-ml-log bash
 - [ ] Add how to use guide;
 - [ ] Allow to manage multiple applications on the web;
 
-# IMPORTANT: ONLY TESTED ON UBUNTU. OTHER PLATFORMS WILL BE TESTED IN THE FUTURE.
+### IMPORTANT: ONLY TESTED ON UBUNTU. OTHER PLATFORMS WILL BE TESTED IN THE FUTURE.
