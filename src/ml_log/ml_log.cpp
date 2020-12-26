@@ -45,8 +45,14 @@ class RedisCommands {
     // Methods.
     void connect(std::string applicationName, std::string redisHost,
                  int redisPort, int redisDatabaseIndex);
-    std::string processKey(std::string key) {
-        return key + "-" + this->_applicationName;
+    std::string processKey(std::string key, int addApplicationName) {
+        std::string suffix = "-" + this->_applicationName;
+        if (addApplicationName) {
+            return key + suffix;
+        } else {
+            int hyphenPosition = key.find('-');
+            return key.replace(key.begin() + hyphenPosition, key.end(), "");
+        }
     }
 };
 
@@ -77,7 +83,7 @@ void RedisCommands::connect(std::string applicationName, std::string redisHost,
 }
 
 void RedisCommands::appendXYItem(std::string key, XYType item) {
-    std::string processedKey = this->processKey(key);
+    std::string processedKey = this->processKey(key, 1);
     std::future<cpp_redis::reply> replyFuture =
         this->client.exists({processedKey});
     this->client.sync_commit();
@@ -97,11 +103,10 @@ void RedisCommands::appendXYItem(std::string key, XYType item) {
 }
 
 std::string RedisCommands::getXYArray(std::string key) {
-    std::string processedKey = this->processKey(key);
+    std::string processedKey = this->processKey(key, 1);
 
     std::future<cpp_redis::reply> replyFuture =
-        this->client.send({"JSON.GET", processedKey, "INDENT", " ", "NEWLINE",
-                           "\n", "SPACE", " "});
+        this->client.send({"JSON.GET", processedKey});
     this->client.sync_commit();
 
     return replyFuture.get().as_string();
@@ -116,8 +121,9 @@ std::vector<std::string> RedisCommands::getKeys() {
     std::vector<std::string> keys;
     keys.resize(replies.size());
 
-    std::transform(replies.begin(), replies.end(), keys.begin(),
-                   [](cpp_redis::reply r) { return r.as_string(); });
+    std::transform(
+        replies.begin(), replies.end(), keys.begin(),
+        [&](cpp_redis::reply r) { return this->processKey(r.as_string(), 0); });
 
     return keys;
 }

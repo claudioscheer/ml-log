@@ -7,7 +7,7 @@ int main() {
         ml_log::redis::RedisCommands::getInstance("test", "172.17.0.2", 6379,
                                                   0);
 
-    std::string key = "train";
+    std::string key = "validation";
     ml_log::redis::XYType item;
     for (int i = 0; i <= 10; i++) {
         item.x = i + 1;

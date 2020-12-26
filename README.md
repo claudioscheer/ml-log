@@ -1,5 +1,3 @@
-# IMPORTANT: ONLY TESTED ON UBUNTU. OTHER PLATFORMS WILL BE TESTED IN THE FUTURE.
-
 # ml-log
 
 A machine learning log system that uses Redis and shows plotting results almost in real time for C++.
@@ -42,15 +40,9 @@ docker exec -it redis-ml-log bash
 
 `redis-ml-log` is the name of your container. You can choose any name you want.
 
-## Configuration file
+## To do
 
-The configuration must have the following structure and items. So far, `ml-log` supports only one application running at a time.
+- [ ] Add how to use guide;
+- [ ] Allow to manage multiple applications on the web;
 
-```
-applicationName=test
-redisHost=172.17.0.2
-redisPort=6379
-redisDatabaseIndex=0
-```
-
-The location of the configuration file must be exported to the environment variable `ML_LOG_CONFIG`.
+# IMPORTANT: ONLY TESTED ON UBUNTU. OTHER PLATFORMS WILL BE TESTED IN THE FUTURE.
