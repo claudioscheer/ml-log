@@ -5,9 +5,9 @@ import applicationRedisSingleton from '../services/ApplicationRedisSingleton';
 import eventEmitter from '../services/EventEmitter';
 import config from '../config.json';
 
-async function getKeys() {
-    let promise = fetch(
-        `${config.endpoint}/api/query/keys?` +
+async function getAllPlots() {
+    let request = await fetch(
+        `${config.endpoint}/api/query/xy-items?` +
             new URLSearchParams({
                 applicationName: applicationRedisSingleton.applicationName,
                 redisHost: applicationRedisSingleton.redisHost,
@@ -17,18 +17,22 @@ async function getKeys() {
             }),
     );
 
-    console.log(config);
+    const data = await request.json();
+    return data;
 }
 
 function PlotsRoute() {
     const [plots, setPlots] = useState([]);
 
-    eventEmitter.on('add-plot', (data) => {
-        setPlots([...plots, data]);
-    });
-
     useEffect(() => {
-        getKeys();
+        const refreshPlots = async () => {
+            const allPlots = await getAllPlots();
+            setPlots(allPlots);
+        };
+        refreshPlots();
+        eventEmitter.on('refresh-plots', () => {
+            refreshPlots();
+        });
     }, []);
 
     return (
@@ -40,19 +44,13 @@ function PlotsRoute() {
                             <Plot
                                 data={[
                                     {
-                                        x: [1, 2, 3],
-                                        y: [2, 6, 3],
-                                        type: 'scatter',
-                                        mode: 'lines+markers',
-                                    },
-                                    {
-                                        x: [1, 2, 3] * 2,
-                                        y: [2, 6, 3],
+                                        x: x.items.map((z) => z.x),
+                                        y: x.items.map((z) => z.y),
                                         type: 'scatter',
                                         mode: 'lines+markers',
                                     },
                                 ]}
-                                layout={{ title: x.title }}
+                                layout={{ title: x.key }}
                             />
                         </Grid>
                     );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     TextField,
     Drawer,
@@ -16,10 +16,9 @@ import {
 } from '@material-ui/core/styles';
 import { blueGrey } from '@material-ui/core/colors';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import AddIcon from '@material-ui/icons/Add';
-import AddPlotDialog from './components/AddPlotDialog';
-import applicationRedisSingleton from './services/ApplicationRedisSingleton';
+import RefreshIcon from '@material-ui/icons/Refresh';
 import eventEmitter from './services/EventEmitter';
+import applicationRedisSingleton from './services/ApplicationRedisSingleton';
 import PlotsRoute from './components/Plots';
 import './styles/App.css';
 
@@ -75,7 +74,12 @@ function App() {
     const [redisDatabaseIndex, setRedisDatabaseIndex] = useState(
         applicationRedisSingleton.redisDatabaseIndex,
     );
-    const [openAddPlot, setOpenAddPlot] = useState(false);
+
+    useEffect(() => {
+        setInterval(() => {
+            eventEmitter.emit('refresh-plots', {});
+        }, 1000);
+    });
 
     return (
         <ThemeProvider theme={theme}>
@@ -86,14 +90,14 @@ function App() {
                         <Typography variant="h6" className={classes.title}>
                             ml-log
                         </Typography>
-                        <Tooltip title="Add plot">
+                        <Tooltip title="Refresh plots">
                             <IconButton
                                 color="inherit"
-                                onClick={(e) => {
-                                    setOpenAddPlot(true);
+                                onClick={() => {
+                                    eventEmitter.emit('refresh-plots', {});
                                 }}
                             >
-                                <AddIcon />
+                                <RefreshIcon />
                             </IconButton>
                         </Tooltip>
                     </Toolbar>
@@ -178,14 +182,6 @@ function App() {
                             <Route path="/" exact component={PlotsRoute} />
                         </Switch>
                     </Router>
-
-                    <AddPlotDialog
-                        open={openAddPlot}
-                        handleClose={() => setOpenAddPlot(false)}
-                        handleAdd={(plot) => {
-                            eventEmitter.emit('add-plot', plot);
-                        }}
-                    />
                 </main>
             </div>
         </ThemeProvider>
