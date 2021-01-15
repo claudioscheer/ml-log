@@ -1,6 +1,6 @@
 # ml-log
 
-ml-log is a header-only machine learning log system that uses Redis and shows plotting results almost in real time for C++.
+ml-log is a header-only library for C++ that allows you to log machine learning results, such as training and validation losses. It uses Redis as storage and plots results almost in real time.
 
 ## Dependencies
 
