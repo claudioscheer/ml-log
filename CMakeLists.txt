@@ -7,6 +7,3 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 find_package(Drogon CONFIG REQUIRED)
-
-add_executable(web-server src/web_server/main.cpp)
-target_link_libraries(web-server cpp_redis pthread tacopie Drogon::Drogon)
