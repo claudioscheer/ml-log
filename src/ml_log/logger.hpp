@@ -1,3 +1,4 @@
+#include "../web_server/web_server.hpp"
 #include "redis_commands.hpp"
 #include "structs.hpp"
 #include <iostream>
@@ -9,6 +10,7 @@ class Logger {
   public:
     // Methods.
     void appendXYItem(std::string key, XYType item);
+    void startWebServer(int port);
 
     // Constructors.
     explicit Logger(std::string applicationName, std::string redisHost,
@@ -20,6 +22,17 @@ class Logger {
   private:
     // Attributes.
     ml_log::redis::RedisCommands *_redisCommands;
+    ml_log::web_server::WebServer *_webServer;
 };
+
+void ml_log::Logger::startWebServer(int port) {
+    if (!this->_webServer) {
+        this->_webServer = new ml_log::web_server::WebServer(port);
+        this->_webServer->startWebServer();
+    } else {
+        std::runtime_error(
+            "error: web server cannot be started more than once.");
+    }
+}
 
 } // namespace ml_log

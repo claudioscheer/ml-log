@@ -1,3 +1,4 @@
+#pragma once
 #include "structs.hpp"
 #include <cpp_redis/cpp_redis>
 #include <future>
