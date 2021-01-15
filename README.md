@@ -1,6 +1,6 @@
 # ml-log
 
-A machine learning log system that uses Redis and shows plotting results almost in real time for C++.
+ml-log is a header-only machine learning log system that uses Redis and shows plotting results almost in real time for C++.
 
 ## Dependencies
 
@@ -45,5 +45,4 @@ docker exec -it redis-ml-log bash
 - [ ] Add how to use guide;
 - [ ] Allow to manage multiple applications on the web;
 - [ ] Add option to export data in CSV;
-
-### IMPORTANT: ONLY TESTED ON UBUNTU. OTHER PLATFORMS WILL BE TESTED IN THE FUTURE.
+- [ ] Test on platforms other than Ubuntu;
