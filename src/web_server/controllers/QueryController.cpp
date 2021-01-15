@@ -1,11 +1,11 @@
 #include "QueryController.hpp"
-#include "../../ml_log/ml_log.cpp"
+#include "../../ml_log/redis_commands.hpp"
 #include <iostream>
 
 namespace ml_log::web_server {
 
 void QueryController::queryXYItems(
-    const HttpRequestPtr &req,
+    [[maybe_unused]] const HttpRequestPtr &req,
     std::function<void(const HttpResponsePtr &)> &&callback,
     const std::string &applicationName, const std::string &redisHost,
     const std::string &redisPort, const std::string &redisDatabaseIndex) const {
