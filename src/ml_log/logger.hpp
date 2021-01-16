@@ -25,6 +25,10 @@ class Logger {
     ml_log::web_server::WebServer *_webServer;
 };
 
+void ml_log::Logger::appendXYItem(std::string key, XYType item) {
+    this->_redisCommands->appendXYItem(key, item);
+}
+
 void ml_log::Logger::startWebServer(int port, std::string web_client_folder) {
     if (!this->_webServer) {
         this->_webServer =
