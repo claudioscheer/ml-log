@@ -36,3 +36,4 @@ docker exec -it redis-ml-log bash
 - [ ] Allow to manage multiple applications on the web;
 - [ ] Add option to export data in CSV;
 - [ ] Test on platforms other than Ubuntu;
+- [ ] Think of a way to eliminate the need to enter the connection configuration on the web;
