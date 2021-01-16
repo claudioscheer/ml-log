@@ -42,7 +42,7 @@ function PlotsRoute() {
     return (
         <div>
             <Grid container spacing={3}>
-                {plots.map((x, i) => {
+                {(plots || []).map((x, i) => {
                     return (
                         <Grid item md={12} lg={6} key={i}>
                             <Plot
