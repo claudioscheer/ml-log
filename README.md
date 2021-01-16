@@ -7,16 +7,6 @@ ml-log is a header-only library for C++ that allows you to log machine learning 
 - [cpp_redis](https://github.com/cpp-redis/cpp_redis): for more details on how to install cpp_redis, click [here](https://github.com/cpp-redis/cpp_redis/wiki/Mac-&-Linux-Install).
 - [drogon](https://github.com/an-tao/drogon): for more details on how to install drogon, click [here](https://github.com/an-tao/drogon/wiki/ENG-02-Installation).
 
-## Building the project
-
-```bash
-git clone https://github.com/dl4all/ml-log.git
-cd ml-log
-mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-cmake --build . --config Release
-```
-
 ## Install Redis using docker
 
 Use the following commands to create a Redis docker container. If you do not use Docker, make sure that your installation supports [RedisJSON](http://redisjson.io).
