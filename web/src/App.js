@@ -78,7 +78,7 @@ function App() {
     useEffect(() => {
         setInterval(() => {
             eventEmitter.emit('refresh-plots', {});
-        }, 1000);
+        }, 2000);
     });
 
     return (

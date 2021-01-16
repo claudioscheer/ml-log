@@ -6,19 +6,23 @@ import eventEmitter from '../services/EventEmitter';
 import config from '../config.json';
 
 async function getAllPlots() {
-    let request = await fetch(
-        `${config.endpoint}/api/query/xy-items?` +
-            new URLSearchParams({
-                applicationName: applicationRedisSingleton.applicationName,
-                redisHost: applicationRedisSingleton.redisHost,
-                redisPort: applicationRedisSingleton.redisPort,
-                redisDatabaseIndex:
-                    applicationRedisSingleton.redisDatabaseIndex,
-            }),
-    );
+    try {
+        let request = await fetch(
+            `${config.endpoint}/api/query/xy-items?` +
+                new URLSearchParams({
+                    applicationName: applicationRedisSingleton.applicationName,
+                    redisHost: applicationRedisSingleton.redisHost,
+                    redisPort: applicationRedisSingleton.redisPort,
+                    redisDatabaseIndex:
+                        applicationRedisSingleton.redisDatabaseIndex,
+                }),
+        );
 
-    const data = await request.json();
-    return data;
+        const data = await request.json();
+        return data;
+    } catch (e) {
+        return [];
+    }
 }
 
 function PlotsRoute() {
