@@ -10,7 +10,7 @@ class Logger {
   public:
     // Methods.
     void appendXYItem(std::string key, XYType item);
-    void startWebServer(int port);
+    void startWebServer(int port, std::string web_client_folder);
 
     // Constructors.
     explicit Logger(std::string applicationName, std::string redisHost,
@@ -25,9 +25,10 @@ class Logger {
     ml_log::web_server::WebServer *_webServer;
 };
 
-void ml_log::Logger::startWebServer(int port) {
+void ml_log::Logger::startWebServer(int port, std::string web_client_folder) {
     if (!this->_webServer) {
-        this->_webServer = new ml_log::web_server::WebServer(port);
+        this->_webServer =
+            new ml_log::web_server::WebServer(port, web_client_folder);
         this->_webServer->startWebServer();
     } else {
         std::runtime_error(
